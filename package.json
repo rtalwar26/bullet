@@ -1,0 +1,20 @@
+{
+  "name": "gun-server",
+  "version": "1.0.0",
+  "description": "simple gun-server",
+  "main": "gun-server.js",
+  "scripts": {
+    "start": "node gun-server.js",
+    "deploy:stage": "ansible-playbook -i scripts/hosts scripts/deploy-stage.yml",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gun",
+    "p2p"
+  ],
+  "author": "Rajat Talwar",
+  "license": "ISC",
+  "dependencies": {
+    "gun": "^0.2020.401"
+  }
+}

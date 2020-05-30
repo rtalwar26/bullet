@@ -1,0 +1,95 @@
+- hosts: production
+  become: yes
+  gather_facts: false
+  vars:
+    pkg: "{{ lookup('file','../package.json')|from_json }}"
+  vars_files:
+    - ./external_vars.yml
+  
+  vars_prompt:    
+    - name: "app_i"
+      prompt: "enter app name (0.GUN_SERVER)"
+      private: no
+    - name: "vault"
+      prompt: "deploy token"
+      private: yes  
+  tasks:
+  
+  - name: create deployment directory
+    file:
+      path: /home/rtalwar/deployments/{{pkg.name}}
+      state: directory
+      mode: 0770
+      owner: rtalwar
+  
+  - name: Synchronize passing in extra rsync options
+    synchronize:
+      src: ../
+      dest: /home/rtalwar/deployments/{{pkg.name}}
+      rsync_opts:
+        - "-zarpt"
+        - "--force"
+        - "--exclude=test.sh"
+        - "--exclude=.history"
+        - "--exclude=package-lock.json"
+        - "--exclude=deploy.sh"
+        - "--exclude=.gitignore"
+        - "--exclude=README.md"
+        - "--exclude=.DS_Store"
+        - "--exclude=node_modules"
+        - "--exclude=.git"        
+        - "--exclude=.idea"
+        - "--exclude=scripts"
+        - "--exclude=.vscode"
+        - "--exclude=hosts"
+        - "--exclude=host"
+
+  - name: show version
+    debug:
+      msg:
+        - building {{pkg.version}}  
+         
+  - name: prune docker images
+    shell: docker image prune -af
+    
+  - name: build docker image
+    shell: docker build -t rtalwar/{{pkg.name}}:latest -t rtalwar/{{pkg.name}}:{{pkg.version}} .
+    args:
+      chdir: /home/rtalwar/deployments/{{pkg.name}}  
+
+  - name: updating {{node_env}}_{{my_apps[app_i | int].name | lower}}
+    shell: docker stop {{node_env}}_{{my_apps[app_i | int].name | lower}} && docker rm {{node_env}}_{{my_apps[app_i | int].name | lower}}
+    args:
+      chdir: /home/rtalwar/deployments/{{pkg.name}}     
+    ignore_errors: yes
+  
+  - name: launching docker 
+    shell: >
+          docker run -d 
+          --env "NODE_ENV={{node_env}}" 
+          --restart=always 
+          --name {{node_env}}_{{my_apps[app_i | int].name | lower}} 
+          --publish {{app_port}}:8765 
+          rtalwar/{{pkg.name}}:latest node gun-server.js 8765 --vault_token {{vault}} --app_name {{my_apps[app_i | int].name}}
+
+  - name: read logs
+    shell: docker logs --tail 5 {{node_env}}_{{my_apps[app_i | int].name | lower}}
+    register: docker_logs
+        
+  - name: display logs
+    debug:
+      msg:
+        - "{{docker_logs.stdout}}"
+   
+    
+
+    
+      
+  
+     
+  
+
+
+  
+   
+  
