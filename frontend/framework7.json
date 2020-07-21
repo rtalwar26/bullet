@@ -1,0 +1,26 @@
+{
+  "cwd": "/Users/rtalwar/personal/Projects/node/gun-server/frontend",
+  "type": [
+    "web"
+  ],
+  "name": "ubllet",
+  "framework": "svelte",
+  "template": "split-view",
+  "cssPreProcessor": false,
+  "bundler": "webpack",
+  "webpack": {
+    "developmentSourceMap": true,
+    "productionSourceMap": true,
+    "hashAssets": false,
+    "preserveAssetsPaths": false,
+    "inlineAssets": true
+  },
+  "theming": {
+    "customColor": true,
+    "color": "#0097a7",
+    "darkTheme": false,
+    "iconFonts": true,
+    "fillBars": false
+  },
+  "customBuild": false
+}

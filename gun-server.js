@@ -9,11 +9,12 @@
     var Gun = require('gun'); // require('gun')
 
     if (process.env.HTTPS_KEY) {
+        console.log('launching https');
         config.key = fs.readFileSync(process.env.HTTPS_KEY);
         config.cert = fs.readFileSync(process.env.HTTPS_CERT);
         config.server = require('https').createServer(config, Gun.serve(__dirname));
     } else {
-
+        console.log('launching plain http');
         config.server = require('http').createServer(Gun.serve(__dirname));
     }
 
