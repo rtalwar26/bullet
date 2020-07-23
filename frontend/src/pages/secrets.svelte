@@ -22,7 +22,7 @@
 
   onMount(() => {
     f7ready(() => {
-      user_pub = f7.gun.user()._.sea.pub;
+      user_pub = f7.gun.user()._.sea.epub;
       console.log("pair", f7.gun.user()._.sea);
     });
   });

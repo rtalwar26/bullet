@@ -40,8 +40,9 @@
     }
   };
   // Login screen demo data
-  let username = "rtalwar";
-  let password = "rtalwar";
+  let private_key = "KWvVBIlXYEBPV022lleL5Q4fLs5oaGIjQQLuNJkfFBY";
+  let public_key =
+    "DOjyPCZ8WGgZFPcMRlGLcj2L3Ek7gP8fyXsCPcCvsOY.qLt10-1XOtU9qvnypQkUtLgJb3BzC5vYPpAa6ApppXs";
 
   function logout() {
     f7.gun.user().leave({}, ack => {
@@ -53,21 +54,38 @@
     f7.loginScreen.open("#my-signup-screen");
   }
   function alertSignupData() {
-    f7.gun.get(`~@${username}`).once(a => {
-      a
-        ? (() => {
-            f7.dialog.alert(`${username} is taken`);
-          })()
-        : (() => {
-            f7.gun.user().create(username, password, () => {
-              f7.loginScreen.close("#my-signup-screen");
-              f7.loginScreen.open("#my-login-screen");
-            });
+    let username =
+      "_" +
+      Math.random()
+        .toString(36)
+        .substr(2, 9);
+    let password =
+      "_" +
+      Math.random()
+        .toString(36)
+        .substr(2, 9);
+
+    f7.gun.user().create(username, password, ack => {
+      (ack.err
+        ? () => {
+            f7.dialog.alert(`Unable to signup,please report the support team`);
+          }
+        : () => {
+            let credentials = f7.gun.user()._.sea;
+            f7.dialog.alert(
+              `private : ${credentials.epriv}\n` +
+                `public : ${credentials.epub}`,
+              `Please store these in a safe place\n`,
+              () => {
+                f7.loginScreen.close("#my-signup-screen");
+                f7.loginScreen.open("#my-login-screen");
+              }
+            );
           })();
     });
   }
   function alertLoginData() {
-    f7.gun.user().auth(username, password, user => {
+    f7.gun.on("auth", user => {
       (user.err
         ? () => {
             f7.dialog.alert(`${user.err}`);
@@ -76,6 +94,8 @@
             f7.loginScreen.close("#my-login-screen");
           })();
     });
+
+    f7.gun.user().auth({ epriv: private_key, epub: public_key });
   }
   onMount(() => {
     f7ready(() => {
@@ -147,16 +167,16 @@
         <List form>
           <ListInput
             type="text"
-            name="username"
-            placeholder="Your username"
-            value={username}
-            onInput={e => (username = e.target.value)} />
+            name="private_key"
+            placeholder="private_key"
+            value={private_key}
+            onInput={e => (private_key = e.target.value)} />
           <ListInput
-            type="password"
-            name="password"
-            placeholder="Your password"
-            value={password}
-            onInput={e => (password = e.target.value)} />
+            type="text"
+            name="public_key"
+            placeholder="public_key"
+            value={public_key}
+            onInput={e => (public_key = e.target.value)} />
         </List>
         <List>
           <ListButton title="Sign In" onClick={() => alertLoginData()} />
@@ -177,18 +197,15 @@
       <Page loginScreen>
         <LoginScreenTitle>Signup</LoginScreenTitle>
         <List form>
-          <ListInput
+          <!-- <ListInput
             type="text"
             name="username"
             placeholder="Your username"
             value={username}
             onInput={e => (username = e.target.value)} />
-          <ListInput
-            type="password"
-            name="password"
-            placeholder="Your password"
-            value={password}
-            onInput={e => (password = e.target.value)} />
+          <ListInput 
+          type="password" name="password" placeholder="Your password" value={password}
+          onInput={e => (password = e.target.value)} />-->
         </List>
         <List>
           <ListButton title="Sign Up" onClick={() => alertSignupData()} />
