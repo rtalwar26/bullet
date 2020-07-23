@@ -2,6 +2,7 @@
 import HomePage from '../pages/home.svelte';
 import AboutPage from '../pages/about.svelte';
 import FormPage from '../pages/form.svelte';
+import SecretsPage from '../pages/secrets.svelte';
 
 import LeftPage1 from '../pages/left-page-1.svelte';
 import LeftPage2 from '../pages/left-page-2.svelte';
@@ -22,7 +23,10 @@ var routes = [
     path: '/form/',
     component: FormPage,
   },
-
+  {
+    path: '/secrets/',
+    component: SecretsPage,
+  },
   {
     path: '/left-page-1/',
     component: LeftPage1,

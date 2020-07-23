@@ -35,33 +35,47 @@
     // App routes
     routes: routes,
     gun: {
-      peers: [],
+      peers: ["http://localhost:8765/gun"],
       localStorage: true
     }
   };
   // Login screen demo data
-  let username = "";
-  let password = "";
+  let username = "rtalwar";
+  let password = "rtalwar";
 
+  function logout() {
+    f7.gun.user().leave({}, ack => {
+      console.log({ ack });
+    });
+  }
   function openSignupScreen() {
     f7.loginScreen.close("#my-login-screen");
     f7.loginScreen.open("#my-signup-screen");
   }
   function alertSignupData() {
-    f7.dialog.alert(
-      "Username: " + username + "<br>Password: " + password,
-      () => {
-        f7.loginScreen.close("#my-signup-screen");
-      }
-    );
+    f7.gun.get(`~@${username}`).once(a => {
+      a
+        ? (() => {
+            f7.dialog.alert(`${username} is taken`);
+          })()
+        : (() => {
+            f7.gun.user().create(username, password, () => {
+              f7.loginScreen.close("#my-signup-screen");
+              f7.loginScreen.open("#my-login-screen");
+            });
+          })();
+    });
   }
   function alertLoginData() {
-    f7.dialog.alert(
-      "Username: " + username + "<br>Password: " + password,
-      () => {
-        f7.loginScreen.close();
-      }
-    );
+    f7.gun.user().auth(username, password, user => {
+      (user.err
+        ? () => {
+            f7.dialog.alert(`${user.err}`);
+          }
+        : () => {
+            f7.loginScreen.close("#my-login-screen");
+          })();
+    });
   }
   onMount(() => {
     f7ready(() => {
@@ -147,6 +161,7 @@
         <List>
           <ListButton title="Sign In" onClick={() => alertLoginData()} />
           <ListButton title="Sign Up" onClick={() => openSignupScreen()} />
+          <ListButton title="Logout" onClick={() => logout()} />
         </List>
         <BlockFooter>
           Some text about login information.

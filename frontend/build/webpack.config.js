@@ -59,7 +59,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(mjs|js|jsx)$/,
+        test: /\.(mjs|jst|jsx)$/,
         use: 'babel-loader',
         include: [
           resolvePath('src'),
@@ -183,10 +183,10 @@ module.exports = {
       }),
       new webpack.optimize.ModuleConcatenationPlugin(),
     ] : [
-      // Development only plugins
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.NamedModulesPlugin(),
-    ]),
+        // Development only plugins
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NamedModulesPlugin(),
+      ]),
     new HtmlWebpackPlugin({
       filename: './index.html',
       template: './src/index.html',

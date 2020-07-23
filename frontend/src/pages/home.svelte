@@ -22,18 +22,7 @@
 
   onMount(async () => {
     f7ready(() => {
-      let user = f7.gun.user();
-      // console.log({ user });
-      // user = {};
-      if (user.is) {
-        console.log("You are logged in");
-      } else {
-        console.log("You are not logged in");
-        // f7.loginScreen.open(true);
-        f7.loginScreen.open("#my-login-screen");
-      }
-
-      console.log(f7.gun);
+      !f7.gun.user().is && f7.loginScreen.open("#my-login-screen");
     });
   });
 </script>
@@ -84,6 +73,7 @@
 
   <BlockTitle>Navigation</BlockTitle>
   <List>
+    <ListItem link="/secrets/" title="Secrets" />
     <ListItem link="/about/" title="About" />
     <ListItem link="/form/" title="Form" />
   </List>
